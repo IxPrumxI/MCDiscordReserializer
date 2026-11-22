@@ -25,6 +25,8 @@ import dev.vankka.simpleast.core.parser.Parser;
 import dev.vankka.simpleast.core.parser.Rule;
 import dev.vankka.simpleast.core.simple.SimpleMarkdownRules;
 
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -299,6 +301,12 @@ public final class DiscordMarkdownRules {
             @Override
             public ParseSpec<R, Node<R>, S> parse(Matcher matcher, Parser<R, Node<R>, S> parser, S state) {
                 String link = matcher.group(1);
+
+                try {
+                    URI.create(link).toURL();
+                } catch (MalformedURLException e) {
+                    return ParseSpec.createTerminal(new TextNode<>(link), state);
+                }
 
                 return ParseSpec.createTerminal(
                         styleNode(new StyleNode.ContentStyle(StyleNode.ContentStyle.Type.LINK, link)),
