@@ -27,6 +27,8 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.jetbrains.annotations.NotNull;
 
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.util.regex.Pattern;
 
 /**
@@ -50,7 +52,11 @@ public class DefaultMinecraftRenderer implements MinecraftRenderer {
 
     @Override
     public Component link(@NotNull Component part, String link) {
-        return part.clickEvent(ClickEvent.openUrl(link));
+        try {
+            return part.clickEvent(ClickEvent.openUrl(URI.create(link).toURL().toString()));
+        } catch (MalformedURLException e) {
+            return part;
+        }
     }
 
     @Override
